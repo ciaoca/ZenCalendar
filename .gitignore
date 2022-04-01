@@ -1,0 +1,23 @@
+# Folder
+_[a-z0-9]*/
+
+# File
+_[a-z0-9]*.*
+*.psd
+*.sql
+*.csv
+*.xls
+*.xlsx
+*.doc
+*.docx
+*.zip
+*.rar
+
+# Mac File
+*.DS_Store
+*.keystore
+*.numbers
+
+# Windows File
+Thumbs.db
+Desktop.ini
