@@ -1,0 +1,277 @@
+/**
+ * name: 小方块
+ * author: ciaoca
+ * email: ciaoca@gmail.com
+ * printMode: print,a3,a5h
+ * ------------------------------ */
+
+:root{
+--day-color:#434a54;
+--saturday-color:#4a89dc;
+--sunday-color:#da4453;
+--month-size:1.8rem;
+--week-size:1.4rem;
+--day-num-size:1.6rem;
+--day-name-size:1rem;
+--day-tip-size:1rem;
+--year-week-size:1rem;
+--year-week-width:16px;
+--day-gap:2px;
+--out-gap:10px;
+}
+
+
+/**
+ * 日历
+ * ------------------------------ */
+.calendar{position:relative;color:var(--day-color);text-align:center;}
+.calendar section{box-sizing:border-box;position:relative;}
+.calendar section + section{margin-top:40px;}
+.calendar section + section:before{content:'';position:absolute;top:-20px;left:0;right:0;height:1px;border-bottom:1px dashed rgba(0,0,0,0.1);}
+
+.calendar .hd{position:sticky;top:0;z-index:2;padding:12px var(--out-gap);padding-left:calc(var(--out-gap) + var(--year-week-width));background-color:rgba(255,255,255,0.9);font-weight:bold;font-size:var(--month-size);line-height:24px;
+background:linear-gradient(to bottom,rgba(255,255,255,1) 70%,rgba(255,255,255,0) 100%);
+}
+.calendar .hd span:after{margin-left:0.2em;}
+.calendar .hd span + span{margin-left:0.5em;}
+.calendar .hd .year:after{content:'年';}
+.calendar .hd .month:after{content:'月';}
+
+.calendar .bd{padding:0 var(--out-gap) 0 calc(var(--out-gap) + var(--year-week-width));}
+.calendar .bd ol{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+}
+.calendar .bd li{box-sizing:border-box;position:relative;min-width:0;padding:var(--day-gap);
+flex:0 0 14.25%;
+}
+.calendar .bd li:nth-child(7n){
+flex-basis:14.5%;
+}
+
+/* 星期 */
+.calendar .weeks{font-weight:bold;font-size:var(--week-size);line-height:24px;}
+
+.calendar .weeks li.week_0:before{content:'日';}
+.calendar .weeks li.week_1:before{content:'一';}
+.calendar .weeks li.week_2:before{content:'二';}
+.calendar .weeks li.week_3:before{content:'三';}
+.calendar .weeks li.week_4:before{content:'四';}
+.calendar .weeks li.week_5:before{content:'五';}
+.calendar .weeks li.week_6:before{content:'六';}
+
+/* 日期 */
+.calendar .days{line-height:20px;}
+.calendar .days .item{position:relative;padding:4px 0;border-radius:5px;}
+.calendar .days .item:before{position:absolute;top:2px;left:2px;font-size:var(--day-tip-size);line-height:1;opacity:0.5;}
+
+.calendar .days span{display:block;}
+.calendar .days .num{font-size:var(--day-num-size);}
+.calendar .days .name{overflow:hidden;font-size:var(--day-name-size);line-height:16px;text-overflow:ellipsis;white-space:nowrap;}
+.calendar .days .week{position:absolute;top:50%;left:calc(0px - var(--year-week-width));width:var(--year-week-width);margin-top:-0.5em;margin-left:calc(0px - var(--day-gap));color:rgba(0,0,0,0.3);font-size:var(--year-week-size);line-height:1;}
+
+.calendar .days .sat{color:var(--saturday-color);}
+.calendar .days .sun{color:var(--sunday-color);}
+.calendar .days .holiday{color:var(--sunday-color);}
+.calendar .days .workday{color:var(--day-color);}
+
+.calendar .days .holiday .item{background-color:rgba(218,68,83,0.15);}
+.calendar .days .workday .item{background-color:rgba(67,74,84,0.15);}
+.calendar .days .now .item{background-color:#d44;color:#fff;}
+.calendar .days .holiday .item:before{content:'休';}
+.calendar .days .workday .item:before{content:'班';}
+.calendar .days .other .item:before{opacity:1;}
+
+.calendar .days .other,
+.calendar .days .other.workday,
+.calendar .days .other.sat.workday,
+.calendar .days .other.sun.workday{color:rgba(67, 74, 84, 0.3);}
+
+.calendar .days .other.sat{color:rgba(74, 137, 220, 0.3);}
+.calendar .days .other.sun,
+.calendar .days .other.holiday,
+.calendar .days .other.sat.holiday,
+.calendar .days .other.sun.holiday{color:rgba(218, 68, 83, 0.3);}
+
+.calendar .days .other.holiday .item{background-color:rgba(218,68,83,0.1);}
+.calendar .days .other.workday .item{background-color:rgba(67,74,84,0.1);}
+
+/* 隐藏前后月份的日期 */
+.calendar.hide_fillday .days .other{background-color:transparent;}
+.calendar.hide_fillday .days .other .item{visibility:hidden;}
+
+/* 隐藏周数 */
+.calendar.hide_yearweek section .hd,
+.calendar.hide_yearweek section .bd{padding-left:var(--out-gap);}
+.calendar.hide_yearweek .days .week{display:none;}
+
+
+/**
+ * 打印模式（默认 A4 纵向）
+ * ------------------------------ */
+body.print{
+--month-size:3.6rem;
+--week-size:2.4rem;
+--day-num-size:3.6rem;
+--day-name-size:1.6rem;
+--day-tip-size:1.6rem;
+--year-week-size:1.4rem;
+--year-week-width:24px;
+--day-gap:6px;
+--out-gap:0px;
+}
+body.print .calendar{display:block;}
+body.print .calendar section{margin:0;padding:0;}
+body.print .calendar section + section:before{display:none;}
+
+body.print .calendar .hd{position:relative;top:auto;line-height:120px;}
+body.print .calendar .hd span{vertical-align:top;}
+body.print .calendar .hd .year{position:absolute;top:0;right:50%;margin-right:calc(var(--month-size) + 1rem);}
+body.print .calendar .hd .month{position:static;margin:0;font-size:2em;}
+body.print .calendar .hd .month:after{position:absolute;top:0;left:50%;margin-left:calc(var(--month-size) + 1rem);font-size:calc(var(--month-size) * 0.9);}
+
+body.print .calendar section:nth-child(n+10) .hd .year{margin-right:calc(var(--month-size) + 3rem);}
+body.print .calendar section:nth-child(n+10) .hd .month:after{margin-left:calc(var(--month-size) + 3rem);}
+
+body.print .calendar .weeks{line-height:50px;}
+body.print .calendar .days li{padding-top:20px;padding-bottom:20px;}
+body.print .calendar .days .item{border-radius:9px;}
+body.print .calendar .days .item{padding-top:16px;padding-bottom:16px;}
+body.print .calendar .days .item:before{top:6px;left:6px;}
+body.print .calendar .days .num{line-height:40px;}
+body.print .calendar .days .name{line-height:24px;}
+body.print .calendar .days .now .item{background-color:transparent;}
+
+body.print .calendar.hide_yearweek section .hd,
+body.print .calendar.hide_yearweek section .bd{padding-left:0;}
+
+/* A3 纵向 */
+body.print.a3{
+--month-size:5rem;
+--week-size:3.6rem;
+--day-num-size:6rem;
+--day-name-size:2.2rem;
+--day-tip-size:2.2rem;
+--year-week-size:1.8rem;
+--year-week-width:30px;
+}
+body.print.a3 .calendar section{margin:0;}
+body.print.a3 .calendar .hd{line-height:160px;}
+body.print.a3 .calendar .weeks{line-height:60px;}
+body.print.a3 .calendar .days .item{padding-top:28px;padding-bottom:28px;}
+body.print.a3 .calendar .days .item:before{top:8px;left:8px;}
+body.print.a3 .calendar .days .num{line-height:60px;}
+body.print.a3 .calendar .days .name{line-height:36px;}
+
+/* A5 横向 */
+body.print.a5h{
+--month-size:2rem;
+--week-size:1.8rem;
+--day-num-size:2.4rem;
+--day-name-size:1.2rem;
+--day-tip-size:1.2rem;
+--year-week-size:1.2rem;
+--year-week-width:30px;
+}
+body.print.a5h .calendar section{margin:0;}
+body.print.a5h .calendar .hd{line-height:40px;}
+body.print.a5h .calendar .weeks{line-height:40px;}
+body.print.a5h .calendar .days li{padding-top:4px;padding-bottom:4px;}
+body.print.a5h .calendar .days .item{padding-top:6px;padding-bottom:6px;}
+body.print.a5h .calendar .days .num{line-height:24px;}
+body.print.a5h .calendar .days .name{line-height:20px;}
+
+
+@media (min-width:414px) {
+:root{
+--day-num-size:1.8rem;
+--day-name-size:1.1rem;
+--year-week-width:20px;
+}
+.calendar .days .item{padding:8px 0;border-radius:5px;}
+.calendar .days .item:before{top:3px;left:3px;}
+}
+
+
+/* iPad */
+@media (min-width:768px) {
+.calendar{margin-left:var(--out-gap);margin-right:var(--out-gap);
+display:flex;
+flex-wrap:wrap;
+}
+.calendar section{margin-left:2%;padding-top:40px;
+flex:0 0 49%;
+}
+.calendar section .hd,
+.calendar section .bd{padding:0 0 0 var(--year-week-width);}
+.calendar section:nth-child(2n+1){margin-left:0;}
+.calendar section + section{margin-top:0;}
+.calendar section + section:before{display:none;}
+
+.calendar.hide_yearweek section .hd,
+.calendar.hide_yearweek section .bd{padding-left:0;}
+}
+
+
+@media (min-width:1024px) {
+:root{
+--month-size:2rem;
+--week-size:1.6rem;
+--day-num-size:2rem;
+--day-name-size:1.2rem;
+--day-gap:4px;
+--out-gap:20px;
+}
+.calendar section{margin-left:4%;
+flex:0 0 48%;
+}
+.calendar .weeks{line-height:32px;}
+.calendar .days .item:before{top:4px;left:4px;}
+.calendar .days .num{line-height:24px;}
+.calendar .days .name{line-height:20px;}
+}
+
+
+/* 桌面端分界线 */
+@media (min-width:1280px) {
+:root{
+--month-size:2.4rem;
+--week-size:1.8rem;
+--day-num-size:2.4rem;
+--day-name-size:1.4rem;
+--day-tip-size:1.2rem;
+--year-week-size:1.2rem;
+}
+.calendar .weeks{line-height:40px;}
+.calendar .days .item:hover{box-shadow:inset 0 0 0 2px rgba(0,0,0,0.2);}
+.calendar .days .num{line-height:28px;}
+.calendar .days .name{line-height:24px;}
+}
+
+
+@media (min-width:1600px) {
+:root{
+--out-gap:40px;
+}
+.calendar section{
+flex:0 0 32%;
+}
+.calendar section,
+.calendar section:nth-child(2n+1){margin-left:2%;}
+.calendar section:nth-child(3n+1){margin-left:0;}
+}
+
+
+@media (min-width:1920px) {
+:root{
+--out-gap:80px;
+}
+}
+
+
+/* 打印 */
+@media print {
+.calendar{margin:0;}
+.calendar section{margin:0;padding:0;page-break-before:always;}
+}

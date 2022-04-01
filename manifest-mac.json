@@ -1,0 +1,16 @@
+{
+  "name": "禅日历",
+  "short_name": "禅日历",
+  "description": "使用 CSS 样式设计，多种主题的日历。",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#d11a2d",
+  "icons": [
+    {
+      "src": "./icon/mac/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
