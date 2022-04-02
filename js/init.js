@@ -135,7 +135,7 @@
     self.getOptions();
 
     // if (location.hostname !== 'localhost') {
-      self.getCacheStyle();
+      self.getCacheTheme();
     // };
 
     self.buildStage();
@@ -326,7 +326,7 @@
   };
 
   // 获取缓存样式
-  zenCalendar.getCacheStyle = function() {
+  zenCalendar.getCacheTheme = function() {
     let self = this;
     let cacheStyle = self.getLocalStorage('theme');
     let nowTime = new Date().getTime();
@@ -499,6 +499,7 @@
     self.dom.body.insertAdjacentElement('afterbegin', self.dom.pane);
 
     self.buildTool();
+    self.buildPrintModes();
   };
 
   zenCalendar.buildTool = function() {
