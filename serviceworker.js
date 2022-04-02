@@ -1,4 +1,4 @@
-let cacheVersion = '20220401';
+let cacheVersion = '20220402';
 let cacheList = [
   './',
   './index.html',
@@ -8,7 +8,6 @@ let cacheList = [
   './icon/icon-512.png',
   './icon/mac/icon-512.png',
   './css/base.css?version=' + cacheVersion,
-  './css/layout.css?version=' + cacheVersion,
   './js/init.js?version=' + cacheVersion,
   './js/plugins.js?version=' + cacheVersion
 ];

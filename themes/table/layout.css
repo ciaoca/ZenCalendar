@@ -1,9 +1,9 @@
 /**
- * name: 格子
- * author: ciaoca
- * email: ciaoca@gmail.com
- * printMode: print,a3,a5h
- * ------------------------------ */
+ * @name 格子
+ * @author ciaoca
+ * @email ciaoca@gmail.com
+ * @printMode A3,A4,A5H
+ */
 
 :root{
 --day-color:#434a54;

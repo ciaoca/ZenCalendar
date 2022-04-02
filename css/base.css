@@ -186,7 +186,7 @@ background-origin:border-box;
 display:flex;
 }
 .tool .is_namevalue label{padding:0 12px;border-radius:4px 0 0 4px;background-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.3);
-flex:none;
+flex:0 0 5em;
 }
 .tool .is_namevalue input,
 .tool .is_namevalue select{width:auto;height:38px;border:none;background-color:transparent;

@@ -18,11 +18,7 @@
     config: {
       prefix: 'zencalendar_',
       themes: {},
-      modes: {
-        'a3': '打印 A3',
-        'a4': '打印 A4',
-        'a5h': '打印 A5 横向',
-      },
+      modes: {},
     },
     settings: {
       startYear: 1900,        // 开始日期
@@ -36,7 +32,8 @@
       printSize: '',          // 浏览模式
     },
     language: {
-      weekName: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六']
+      startWeekName: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
+      horizontal: '横向',
     }
   };
 
@@ -299,7 +296,13 @@
     };
 
     if (self.settings.printSize.length) {
-      self.dom.body.classList.add('print', self.settings.printSize);
+      let size = self.settings.printSize.toLowerCase();
+
+      if (!self.dom.body.classList.contains(size)) {
+        self.dom.body.classList.remove(...['print', ...Object.keys(self.config.modes)]);
+        self.dom.body.classList.add('print', size);
+      };
+
     } else {
       self.dom.body.removeAttribute('class');
     };
@@ -325,7 +328,7 @@
   // 获取缓存样式
   zenCalendar.getCacheStyle = function() {
     let self = this;
-    let cacheStyle = self.getLocalStorage('style');
+    let cacheStyle = self.getLocalStorage('theme');
     let nowTime = new Date().getTime();
 
     if (!cacheStyle || typeof cacheStyle !== 'object' || typeof cacheStyle.timestamp !== 'number') {
@@ -340,6 +343,8 @@
       self.dom.themeStyle.dataset.id = self.settings.theme;
       self.dom.themeStyle.innerHTML = cacheStyle.text;
     };
+
+    self.parsePrintModes(cacheStyle.printMode);
   };
 
   // 更换主题
@@ -347,7 +352,7 @@
     let self = this;
     let url = './themes/' + self.settings.theme + '/layout.css?v=' + new Date().getTime();
 
-    fetch(url, {}).then((response) => {
+    fetch(url).then((response) => {
       if (!response.ok) {
         self.settings.theme = self.dom.themeStyle.dataset.id;
         self.setOptions();
@@ -362,9 +367,37 @@
     }).then((data) => {
       let cacheStyle = {
         text: data,
-        timestamp: new Date().getTime()
+        printMode: [],
+        timestamp: new Date().getTime(),
       };
 
+      // 解析声明注释
+      let noteReg = data.match(/^\/\*(\s|.)*?\*\//);
+      let noteRule = {};
+
+      if (Array.isArray(noteReg) && noteReg.length) {
+        let list = noteReg[0].match(/^\s+\*\s+\@.+$/gm);
+
+        for (let x of list) {
+          let row = x.match(/^\s+\*\s+\@([^\s]+)\s+(.+)$/);
+
+          if (Array.isArray(row) && row.length >= 2) {
+            if (['printMode'].indexOf(row[1]) >= 0) {
+              noteRule[row[1]] = row[2].split(',');
+            } else {
+              noteRule[row[1]] = row[2];
+            };
+          };
+        };
+      };
+
+      if (noteRule.hasOwnProperty('printMode')) {
+        cacheStyle.printMode = noteRule.printMode;
+        self.parsePrintModes(noteRule.printMode);
+        self.buildPrintModes();
+      };
+
+      // 压缩 CSS
       cacheStyle.text = cacheStyle.text.replace(/\/\*[^/]+\*\//g, '');
       cacheStyle.text = cacheStyle.text.replace(/\n+/g, '');
       cacheStyle.text = cacheStyle.text.replace(/\s+/g, ' ');
@@ -373,7 +406,7 @@
 
       self.dom.themeStyle.dataset.id = self.settings.theme;
       self.dom.themeStyle.innerHTML = cacheStyle.text;
-      self.setLocalStorage('style', cacheStyle);
+      self.setLocalStorage('theme', cacheStyle);
 
     }).catch((error) => {
       notyf.error(String(error));
@@ -489,21 +522,14 @@
         <select name="wday">`;
 
     for (let i = 0; i < 7; i++) {
-      html += `<option value="${i}"${opts.wday === i ? ' selected' : ''}>${self.language.weekName[parseInt(i, 10)]}</option>`;
+      html += `<option value="${i}"${opts.wday === i ? ' selected' : ''}>${self.language.startWeekName[parseInt(i, 10)]}</option>`;
     };
 
     html += `</select>
       </section>
       <section class="is_namevalue in_mode">
-        <label>模式</label>
-        <select name="printSize">
-          <option value="">浏览</option>`;
-
-    for (let x in opts.modes) {
-      html += `<option value="${x}"${opts.printSize === x ? ' selected' : ''}>${opts.modes[x]}</option>`;
-    };
-
-    html += `</select>
+        <label>打印模式</label>
+        <select name="printSize"></select>
       </section>
       <section class="is_namevalue in_theme">
         <label>主题</label>
@@ -519,6 +545,43 @@
     <a class="toggle" href="javascript://" rel="toggle_tool"></a>`;
 
     self.dom.tool.innerHTML = html;
+  };
+
+  // 处理打印模式
+  zenCalendar.parsePrintModes = function(list) {
+    let self = this;
+    self.config.modes = {};
+
+    if (Array.isArray(list) && list.length) {
+      for (let x of list) {
+        self.config.modes[x.toLowerCase()] = x.slice(-1).toLowerCase() === 'h' ? x.slice(0, -1) + ' ' + self.language.horizontal : x;
+      };
+    };
+  };
+
+  zenCalendar.buildPrintModes = function() {
+    let self = this;
+    let list = self.dom.tool.querySelectorAll('select');
+    let el;
+
+    for (let x of list) {
+      if (x.name === 'printSize') {
+        el = x;
+        break;
+      };
+    };
+
+    if (!el) {
+      return;
+    };
+
+    let html = `<option value="">浏览</option>`;
+
+    for (let x in self.config.modes) {
+      html += `<option value="${x}"${self.settings.printSize.toLowerCase() === x ? ' selected' : ''}>${self.config.modes[x]}</option>`;
+    };
+
+    el.innerHTML = html;
   };
 
   zenCalendar.buildDays = function(year, month) {
