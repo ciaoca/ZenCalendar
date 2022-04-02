@@ -1,0 +1,83 @@
+/**
+ * @name 主题名称
+ * @description 简介
+ * @author 作者
+ * @email 联系邮箱
+ */
+
+
+/**
+ * 日历
+ * ------------------------------ */
+.calendar{}
+.calendar section{}
+
+.calendar .hd{}
+.calendar .hd span{}
+.calendar .hd .year{}
+.calendar .hd .month{}
+
+.calendar .bd{}
+.calendar .bd ol{}
+.calendar .bd li{}
+
+/* 星期 */
+.calendar .weeks{}
+.calendar .weeks li.week_0:before{content:'日';}
+.calendar .weeks li.week_1:before{content:'一';}
+.calendar .weeks li.week_2:before{content:'二';}
+.calendar .weeks li.week_3:before{content:'三';}
+.calendar .weeks li.week_4:before{content:'四';}
+.calendar .weeks li.week_5:before{content:'五';}
+.calendar .weeks li.week_6:before{content:'六';}
+
+/**
+ * 日期
+ * .num       数字日期
+ * .name      特殊日期名称
+ * .week      第几周
+ * .sat       周六
+ * .sun       周日
+ * .holiday   休息日
+ * .workday   工作日（被调休的）
+ * .now       今天
+ * .other     前后月份填充的日期
+ */
+.calendar .days{}
+.calendar .days .item{}
+
+.calendar .days span{}
+.calendar .days .num{}
+.calendar .days .name{}
+.calendar .days .week{}
+
+.calendar .days .sat{}
+.calendar .days .sun{}
+.calendar .days .holiday{}
+.calendar .days .workday{}
+
+.calendar .days .holiday .item{}
+.calendar .days .workday .item{}
+.calendar .days .now .item{}
+.calendar .days .other .item{}
+
+.calendar .days .other,
+.calendar .days .other.workday,
+.calendar .days .other.sat.workday,
+.calendar .days .other.sun.workday{}
+
+.calendar .days .other.sat{}
+.calendar .days .other.sun,
+.calendar .days .other.holiday,
+.calendar .days .other.sat.holiday,
+.calendar .days .other.sun.holiday{}
+
+.calendar .days .other.holiday .item{}
+.calendar .days .other.workday .item{}
+
+/* 隐藏前后月份的日期 */
+.calendar.hide_fillday .days .other{}
+.calendar.hide_fillday .days .other .item{visibility:hidden;}
+
+/* 隐藏周数 */
+.calendar.hide_yearweek .days .week{display:none;}
