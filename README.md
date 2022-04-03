@@ -67,5 +67,5 @@ body.print.a5h{}
 1. Fork 一个新分支；
 2. 在 `themes/` 目录下创建新的主题文件夹，如：`themes/myTheme`
 3. 将 `themes/template.css` 复制到新主题目录下，重命名为 `layout.css` ，如需使用图片或其他素材，都存放在当前主题目录下；
-4. 在 `index.html` 中的添加一行主题配置代码，在开发环境中进行创作吧。
-
+4. 开发过程中，可修改 `js/init.js` 的 `config.disableCache` 配置为 `true`，禁用缓存中的样式；
+5. 在 `index.html` 中的添加一行主题配置代码，在开发环境中进行创作吧。
