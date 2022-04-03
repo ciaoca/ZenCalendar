@@ -19,6 +19,7 @@
       prefix: 'zencalendar_',
       themes: {},
       modes: {},
+      disableCache: false,    // 禁用缓存和 Service Worker（建议开发时禁用）
     },
     settings: {
       startYear: 1900,        // 开始日期
@@ -112,8 +113,6 @@
   zenCalendar.init = function() {
     let self = this;
 
-    self.buildPwa();
-
     self.dom.themeStyle = document.createElement('style');
     document.head.insertAdjacentElement('beforeend', self.dom.themeStyle);
 
@@ -134,9 +133,10 @@
 
     self.getOptions();
 
-    // if (location.hostname !== 'localhost') {
+    if (!self.config.disableCache) {
+      self.buildPwa();
       self.getCacheTheme();
-    // };
+    };
 
     self.buildStage();
     self.ready();
@@ -504,18 +504,17 @@
 
   zenCalendar.buildTool = function() {
     let self = this;
-    let opts = Object.assign({}, self.config, self.settings);
     let html = `<div class="box">
       <section class="is_switch">
-        <input type="checkbox" name="hideFillDay" id="tool_hideFillDay"${opts.hideFillDay ? ' checked' : ''}>
+        <input type="checkbox" name="hideFillDay" id="tool_hideFillDay"${self.settings.hideFillDay ? ' checked' : ''}>
         <label for="tool_hideFillDay">隐藏前后月份的日期</label>
       </section>
       <section class="is_switch">
-        <input type="checkbox" name="hideYearWeek" id="tool_hideYearWeek"${opts.hideYearWeek ? ' checked' : ''}>
+        <input type="checkbox" name="hideYearWeek" id="tool_hideYearWeek"${self.settings.hideYearWeek ? ' checked' : ''}>
         <label for="tool_hideYearWeek">隐藏周数</label>
       </section>
       <section class="is_switch">
-        <input type="checkbox" name="lockRow" id="tool_lockRow"${opts.lockRow ? ' checked' : ''}>
+        <input type="checkbox" name="lockRow" id="tool_lockRow"${self.settings.lockRow ? ' checked' : ''}>
         <label for="tool_lockRow">固定行数</label>
       </section>
       <section class="is_namevalue">
@@ -523,7 +522,7 @@
         <select name="wday">`;
 
     for (let i = 0; i < 7; i++) {
-      html += `<option value="${i}"${opts.wday === i ? ' selected' : ''}>${self.language.startWeekName[parseInt(i, 10)]}</option>`;
+      html += `<option value="${i}"${self.settings.wday === i ? ' selected' : ''}>${self.language.startWeekName[parseInt(i, 10)]}</option>`;
     };
 
     html += `</select>
@@ -536,8 +535,8 @@
         <label>主题</label>
         <select name="theme">`;
 
-    for (let x in opts.themes) {
-      html += `<option value="${x}"${opts.theme === x ? ' selected' : ''}>${opts.themes[x]}</option>`;
+    for (let x in self.config.themes) {
+      html += `<option value="${x}"${self.settings.theme === x ? ' selected' : ''}>${self.config.themes[x]}</option>`;
     };
 
     html += `</select>
