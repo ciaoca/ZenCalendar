@@ -2,7 +2,7 @@
 --text-color:#434a54;
 --switch-color:#6bb917;
 --desk-height:60px;
---tool-width:75%;
+--tool-width:300px;
 }
 
 /* Reset */
@@ -226,7 +226,7 @@ transform:translate(0,0);
 
 @media (min-width:768px) {
 :root{
---tool-width:50%;
+--tool-width:360px;
 }
 }
 
@@ -247,21 +247,12 @@ transition-duration:0.2s;
 
 
 @media (min-width:1280px) {
-:root{
---tool-width:30%;
-}
 body{
 -webkit-user-select:auto;
 user-select:auto;
 }
 }
 
-
-@media (min-width:1600px) {
-:root{
---tool-width:25%;
-}
-}
 
 
 /* iPhone X ~ 12 */
