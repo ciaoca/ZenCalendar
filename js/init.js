@@ -22,9 +22,9 @@
       disableCache: false,    // 禁用缓存和 Service Worker（建议开发时禁用）
     },
     settings: {
+      curYear: new Date().getFullYear(),
       startYear: 1900,        // 开始日期
       endYear: 2100,          // 结束日期
-      curYear: new Date().getFullYear(),
       wday: 0,                // 星期开始于周几
       lockRow: false,         // 固定日期的行数
       hideFillDay: false,     // 隐藏前后月份的天数
@@ -49,7 +49,8 @@
     return [31, 28 + leapYearDay, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   };
 
-  // 获取周数
+  // 获取周数 (ISO_8601 标准)
+  // https://zh.wikipedia.org/wiki/ISO_8601
   zenCalendar.getWeekNum = function(dateObj) {
     let self = this;
     let curTime = dateObj.getTime();
@@ -142,7 +143,7 @@
     self.ready();
   };
 
-  // 配置参数
+  // 构建 PWA 配置
   zenCalendar.buildPwa = function() {
     let ua = navigator.userAgent.toLowerCase();
     let manifest = document.createElement('link');
@@ -171,7 +172,6 @@
     };
   };
 
-  // 配置参数
   zenCalendar.ready = function() {
     let self = this;
 
@@ -262,9 +262,7 @@
     self.setOptions();
     self.gotoYear();
 
-    let now = new Date();
-
-    if (self.settings.curYear === now.getFullYear()) {
+    if (self.dom.themeStyle.dataset.id && self.settings.curYear === new Date().getFullYear()) {
       setTimeout(() => {
         self.gotoToday();
       }, 200);
@@ -315,7 +313,7 @@
     self.formatOptions();
   };
 
-  // 转换配置
+  // 转换配置参数
   zenCalendar.formatOptions = function() {
     let self = this;
 
@@ -325,7 +323,7 @@
     self.settings.sunday = (7 - self.settings.wday) % 7;
   };
 
-  // 获取缓存样式
+  // 获取缓存主题
   zenCalendar.getCacheTheme = function() {
     let self = this;
     let cacheStyle = self.getLocalStorage('theme');
@@ -443,7 +441,7 @@
     // document.documentElement.scrollTop = document.documentElement.scrollTop + document.getElementById(key).getBoundingClientRect().top - self.dom.tool.height();
   };
 
-  // 跳转到日期
+  // 跳转到年份
   zenCalendar.gotoYear = function() {
     let self = this;
     let html = '';
@@ -584,6 +582,7 @@
     el.innerHTML = html;
   };
 
+  // 构建日期列表
   zenCalendar.buildDays = function(year, month) {
     let self = this;
 
@@ -723,7 +722,6 @@
     });
   };
 
-  // 构建日期列表
   zenCalendar.getDaysHtml = function(opts) {
     let self = this;
     let html = `<section>
@@ -762,7 +760,7 @@
     return html;
   };
 
-  // 构建日期列表
+  // 获取日期名称
   zenCalendar.getCnName = function(year, month, day) {
     let self = this;
     let cnDate = calendar.solar2lunar(year, month, day);

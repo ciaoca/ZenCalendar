@@ -1,4 +1,4 @@
-let cacheVersion = '20220402';
+let cacheVersion = '20220406';
 let cacheList = [
   './',
   './index.html',
