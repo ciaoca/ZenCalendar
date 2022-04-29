@@ -163,6 +163,7 @@ transition-delay:0.4s;
 transition-property:background-color;
 transition-duration:0.4s;
 }
+.tool .gitbtn{position:absolute;bottom:6px;left:12px;right:12px;}
 .tool .box{overflow-x:hidden;overflow-y:auto;position:absolute;top:0;bottom:0;right:0;left:calc(100% - var(--tool-width));z-index:5;padding:16px 12px;background-color:#f3f3f3;box-shadow:0 -2px 3px rgba(0,0,0,0.3);line-height:40px;
 transform:translate(100%,0);
 transition-property:transform;
@@ -186,7 +187,7 @@ background-origin:border-box;
 display:flex;
 }
 .tool .is_namevalue label{padding:0 12px;border-radius:4px 0 0 4px;background-color:rgba(0,0,0,0.1);color:rgba(0,0,0,0.3);
-flex:0 0 5em;
+flex:0 0 5.5em;
 }
 .tool .is_namevalue input,
 .tool .is_namevalue select{width:auto;height:38px;border:none;background-color:transparent;
@@ -262,6 +263,7 @@ user-select:auto;
 (device-width:428px) and (device-height:926px) {
 .desk{height:calc(var(--desk-height) + env(safe-area-inset-bottom));}
 .desk .box{padding-bottom:calc(12px + env(safe-area-inset-bottom));}
+.tool .gitbtn{bottom:calc(12px + env(safe-area-inset-bottom));}
 }
 
 
