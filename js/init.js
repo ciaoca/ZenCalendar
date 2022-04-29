@@ -1,12 +1,12 @@
 (function(window, undefined) {
   const notyf = new Notyf({
-    ripple: false,
+    dismissible: true,
+    duration: 0,
     position: {
       x: 'center',
       y: 'top',
     },
-    dismissible: true,
-    duration: 0
+    ripple: false,
   });
 
   const zenCalendar = {
@@ -45,16 +45,16 @@
 
   // 获取当年每月的天数
   zenCalendar.getMonthDays = function(year) {
-    let leapYearDay = ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 1 : 0;
+    const leapYearDay = ((year % 4 === 0 && year % 100 !== 0) || year % 400 === 0) ? 1 : 0;
     return [31, 28 + leapYearDay, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
   };
 
   // 获取周数 (ISO_8601 标准)
   // https://zh.wikipedia.org/wiki/ISO_8601
   zenCalendar.getWeekNum = function(dateObj) {
-    let self = this;
-    let curTime = dateObj.getTime();
-    let yearFirstDate = new Date(dateObj.getFullYear(), 0, 1, 0, 0, 0, 0);
+    const self = this;
+    const curTime = dateObj.getTime();
+    const yearFirstDate = new Date(dateObj.getFullYear(), 0, 1, 0, 0, 0, 0);
     let weekFirstTime = yearFirstDate.getTime();
     let weekDay = yearFirstDate.getDay();
     let weekNum = 0;
@@ -62,8 +62,6 @@
     if (weekDay === 0) {
       weekDay = 7;
     };
-
-    let weekOffset = weekDay > 4 ? -1 : 0;
 
     if (weekDay > 4) {
       weekFirstTime += (8 - weekDay) * 86400000;
@@ -83,36 +81,30 @@
 
   // 保存本地存储（localStorage）
   zenCalendar.setLocalStorage = function(name, data) {
-    if (!name || !name.length) {
+    if (typeof name !== 'string' || !name.length) {
       return;
     };
-
-    name = this.config.prefix + name;
     
-    localStorage.setItem(name, JSON.stringify(data));
+    localStorage.setItem(this.config.prefix + name, JSON.stringify(data));
   };
 
   // 读取本地存储（localStorage）
   zenCalendar.getLocalStorage = function(name) {
-    if (!name || !name.length) {
+    if (typeof name !== 'string' || !name.length) {
       return null;
     };
 
-    name = this.config.prefix + name;
-
-    if (!localStorage.getItem(name)) {
-      return null;
-    };
+    let data = localStorage.getItem(this.config.prefix + name);
 
     try {
-      return JSON.parse(localStorage.getItem(name));
+      return JSON.parse(data);
     } catch(e) {
       return null;
     };
   };
 
   zenCalendar.init = function() {
-    let self = this;
+    const self = this;
 
     self.dom.themeStyle = document.createElement('style');
     document.head.insertAdjacentElement('beforeend', self.dom.themeStyle);
@@ -145,8 +137,8 @@
 
   // 构建 PWA 配置
   zenCalendar.buildPwa = function() {
-    let ua = navigator.userAgent.toLowerCase();
-    let manifest = document.createElement('link');
+    const ua = navigator.userAgent.toLowerCase();
+    const manifest = document.createElement('link');
 
     manifest.rel = 'manifest';
 
@@ -173,42 +165,42 @@
   };
 
   zenCalendar.ready = function() {
-    let self = this;
+    const self = this;
 
     self.dom.body.addEventListener('change', function(e) {
-      let _this = e.target;
-      let nodeName = _this.nodeName.toLowerCase();
+      const el = e.target;
+      const nodeName = el.nodeName.toLowerCase();
 
       if (nodeName === 'input') {
-        let _name = _this.name;
+        let name = el.name;
 
-        switch (_name) {
+        switch (name) {
           case 'hideFillDay':
           case 'hideYearWeek':
           case 'lockRow':
-            self.settings[_name] = _this.checked;
+            self.settings[name] = el.checked;
             self.setOptions();
             break;
         };
 
-        if (['lockRow'].indexOf(_name) >= 0) {
+        if (['lockRow'].indexOf(name) >= 0) {
           self.gotoYear();
         };
 
       } else if (nodeName === 'select') {
-        let _name = _this.name;
-        let _value = _this.value;
+        const name = el.name;
+        const value = el.value;
 
-        switch (_name) {
+        switch (name) {
           case 'theme':
           case 'printSize':
-            self.settings[_name] = _value;
+            self.settings[name] = value;
             self.setOptions();
             break;
 
           case 'wday':
           case 'curYear':
-            self.settings[_name] = parseInt(_value, 10);
+            self.settings[name] = parseInt(value, 10);
             self.setOptions();
             self.gotoYear();
             break;
@@ -217,15 +209,14 @@
     });
 
     self.dom.body.addEventListener('click', function(e) {
-      let _this = e.target;
-      let nodeName = _this.nodeName.toLowerCase();
+      const el = e.target;
+      const nodeName = el.nodeName.toLowerCase();
 
       if (nodeName === 'a') {
         event.preventDefault();
-        let _rel = _this.rel;
-        let _rev = _this.rev;
+        const rel = el.rel;
 
-        switch (_rel) {
+        switch (rel) {
           case 'toggle_tool':
             self.dom.tool.classList.toggle('show');
             break;
@@ -236,18 +227,18 @@
 
           case 'prev_year':
           case 'next_year':
-            let el = _this.parentNode.querySelector('select');
+            const sub = el.parentNode.querySelector('select');
             let value = self.settings.curYear;
 
-            if (el.name === 'curYear') {
-              if (_rel === 'prev_year') {
+            if (sub.name === 'curYear') {
+              if (rel === 'prev_year') {
                 value -= 1;
               } else {
                 value += 1;
               };
 
               if (value >= self.settings.startYear && value <= self.settings.endYear) {
-                el.value = value;
+                sub.value = value;
                 self.settings.curYear = value;
 
                 self.setOptions();
@@ -271,7 +262,7 @@
 
   // 获取配置参数
   zenCalendar.getOptions = function() {
-    let self = this;
+    const self = this;
 
     Object.assign(self.settings, self.getLocalStorage('options'));
     self.formatOptions();
@@ -279,7 +270,7 @@
 
   // 保存配置参数
   zenCalendar.setOptions = function() {
-    let self = this;
+    const self = this;
 
     if (self.settings.hideFillDay) {
       self.dom.pane.classList.add('hide_fillday');
@@ -315,7 +306,7 @@
 
   // 转换配置参数
   zenCalendar.formatOptions = function() {
-    let self = this;
+    const self = this;
 
     // 星期的起始位置
     self.settings.wday %= 7;
@@ -325,9 +316,9 @@
 
   // 获取缓存主题
   zenCalendar.getCacheTheme = function() {
-    let self = this;
-    let cacheStyle = self.getLocalStorage('theme');
-    let nowTime = new Date().getTime();
+    const self = this;
+    const cacheStyle = self.getLocalStorage('theme');
+    const nowTime = new Date().getTime();
 
     if (!cacheStyle || typeof cacheStyle !== 'object' || typeof cacheStyle.timestamp !== 'number') {
       return;
@@ -347,8 +338,8 @@
 
   // 更换主题
   zenCalendar.toggleTheme = function() {
-    let self = this;
-    let url = './themes/' + self.settings.theme + '/layout.css?v=' + new Date().getTime();
+    const self = this;
+    const url = './themes/' + self.settings.theme + '/layout.css?v=' + new Date().getTime();
 
     fetch(url).then((response) => {
       if (!response.ok) {
@@ -363,15 +354,15 @@
       // console.log('success', response);
 
     }).then((data) => {
-      let cacheStyle = {
+      const cacheStyle = {
         text: data,
         printMode: [],
         timestamp: new Date().getTime(),
       };
 
       // 解析声明注释
-      let noteReg = data.match(/^\/\*(\s|.)*?\*\//);
-      let noteRule = {};
+      const noteReg = data.match(/^\/\*(\s|.)*?\*\//);
+      const noteRule = {};
 
       if (Array.isArray(noteReg) && noteReg.length) {
         let list = noteReg[0].match(/^\s+\*\s+\@.+$/gm);
@@ -414,10 +405,10 @@
 
   // 跳转到今天
   zenCalendar.gotoToday = function() {
-    let self = this;
-    let now = new Date();
-    let year = now.getFullYear();
-    let toolSelects = self.dom.desk.querySelectorAll('select');
+    const self = this;
+    const now = new Date();
+    const year = now.getFullYear();
+    const toolSelects = self.dom.desk.querySelectorAll('select');
     let curYear;
 
     for (let x of toolSelects) {
@@ -443,7 +434,7 @@
 
   // 跳转到年份
   zenCalendar.gotoYear = function() {
-    let self = this;
+    const self = this;
     let html = '';
 
     if (!self.isInteger(self.settings.curYear)) {
@@ -469,7 +460,7 @@
   };
 
   zenCalendar.buildStage = function() {
-    let self = this;
+    const self = this;
     let html = `<div class="box">
       <section class="in_year">
         <a class="prev" href="javascript://" rel="prev_year"></a>
@@ -501,7 +492,7 @@
   };
 
   zenCalendar.buildTool = function() {
-    let self = this;
+    const self = this;
     let html = `<div class="box">
       <section class="is_switch">
         <input type="checkbox" name="hideFillDay" id="tool_hideFillDay"${self.settings.hideFillDay ? ' checked' : ''}>
@@ -539,6 +530,9 @@
 
     html += `</select>
       </section>
+      <div class="gitbtn">
+        <iframe src="https://ghbtns.com/github-btn.html?user=ciaoca&repo=ZenCalendar&type=star&count=true" frameborder="0" scrolling="0" height="20" title="GitHub"></iframe>
+      </div>
     </div>
     <a class="toggle" href="javascript://" rel="toggle_tool"></a>`;
 
@@ -547,7 +541,7 @@
 
   // 处理打印模式
   zenCalendar.parsePrintModes = function(list) {
-    let self = this;
+    const self = this;
     self.config.modes = {};
 
     if (Array.isArray(list) && list.length) {
@@ -558,8 +552,8 @@
   };
 
   zenCalendar.buildPrintModes = function() {
-    let self = this;
-    let list = self.dom.tool.querySelectorAll('select');
+    const self = this;
+    const list = self.dom.tool.querySelectorAll('select');
     let el;
 
     for (let x of list) {
@@ -584,15 +578,17 @@
 
   // 构建日期列表
   zenCalendar.buildDays = function(year, month) {
-    let self = this;
+    const self = this;
 
-    if (!self.isInteger(year) || !self.isInteger(month)) {return};
+    if (!self.isInteger(year) || !self.isInteger(month)) {
+      return;
+    };
 
-    let jsMonth = month - 1;
-    let monthDays = self.getMonthDays(year);
-    let sameMonthDate = new Date(year, jsMonth, 1);
-    let nowDate = new Date();
-    let nowText = [nowDate.getFullYear(), nowDate.getMonth() + 1, nowDate.getDate()].join('-');
+    const jsMonth = month - 1;
+    const monthDays = self.getMonthDays(year);
+    const sameMonthDate = new Date(year, jsMonth, 1);
+    const nowDate = new Date();
+    const nowText = [nowDate.getFullYear(), nowDate.getMonth() + 1, nowDate.getDate()].join('-');
 
     // 获取当月第一天
     let monthFirstDay = sameMonthDate.getDay() - self.settings.wday;
@@ -601,14 +597,14 @@
     };
 
     // 自适应或固定行数
-    let monthDayMax = self.settings.lockRow ? 42 : Math.ceil((monthDays[jsMonth] + monthFirstDay) / 7) * 7;
+    const monthDayMax = self.settings.lockRow ? 42 : Math.ceil((monthDays[jsMonth] + monthFirstDay) / 7) * 7;
 
-    let weekList = [];
-    let dayList = [];
+    const weekList = [];
+    const dayList = [];
 
     // 星期
     for(let i = 0; i < 7; i++) {
-      let item = {
+      const item = {
         classVal: [],
         num: (i + self.settings.wday) % 7
       };
@@ -623,13 +619,6 @@
       weekList.push(item);
     };
 
-    let todayDate;
-    let todayYear;
-    let todayMonth;
-    let todayNum;
-    let todayText;
-    let todayName;
-
     for (let i = 0; i < monthDayMax; i++) {
       let item = {
         classVal: [],
@@ -637,9 +626,9 @@
         name: '',
       };
 
-      todayYear = year;
-      todayMonth = month;
-      todayNum = i - monthFirstDay + 1;
+      let todayYear = year;
+      let todayMonth = month;
+      let todayNum = i - monthFirstDay + 1;
       
       // 填充前后月份的日期
       if (todayNum <= 0) {
@@ -667,8 +656,8 @@
         };
       };
 
-      todayDate = new Date(todayYear, todayMonth - 1, todayNum);
-      todayText = [todayYear, todayMonth, todayNum].join('-');
+      const todayDate = new Date(todayYear, todayMonth - 1, todayNum);
+      const todayText = [todayYear, todayMonth, todayNum].join('-');
 
       // 高亮今天
       if (todayText === nowText) {
@@ -723,7 +712,6 @@
   };
 
   zenCalendar.getDaysHtml = function(opts) {
-    let self = this;
     let html = `<section>
       <div class="hd">
         <span class="year">${opts.year}</span>
@@ -762,9 +750,9 @@
 
   // 获取日期名称
   zenCalendar.getCnName = function(year, month, day) {
-    let self = this;
-    let cnDate = calendar.solar2lunar(year, month, day);
-    let mDay = [month, day].join('-');
+    const self = this;
+    const cnDate = calendar.solar2lunar(year, month, day);
+    const mDay = [month, day].join('-');
     let text;
 
     // 自定义节日
@@ -854,7 +842,7 @@
     '2022-10-9': '',
   };
 
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', () => {
     zenCalendar.init();
   });
 })(window);
