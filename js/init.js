@@ -19,7 +19,12 @@
       prefix: 'zencalendar_',
       themes: {},
       modes: {},
-      disableCache: false,    // 禁用缓存和 Service Worker（建议开发时禁用）
+
+      /**
+       * 开发模式
+       * 禁用缓存和 Service Worker（建议开发时禁用）
+       */
+      devMode: false,
     },
     settings: {
       curYear: new Date().getFullYear(),
@@ -176,22 +181,37 @@
     self.dom.pane = document.createElement('div');
     self.dom.pane.classList.add('calendar');
 
-    if (Array.isArray(window.pageData.themes) && window.pageData.themes.length) {
-      for (let x of window.pageData.themes) {
-        self.config.themes[x.id] = x.name;
-      };
-      self.settings.theme = window.pageData.themes[0].id;
-    };
-
+    self.mergeConfig();
     self.getOptions();
 
-    if (!self.config.disableCache) {
+    if (!self.config.devMode) {
       self.buildPwa();
       self.getCacheTheme();
     };
 
     self.buildStage();
     self.ready();
+  };
+
+  // 合并页面配置项
+  zenCalendar.mergeConfig = function() {
+    const self = this;
+    const config = window.pageData;
+
+    if (!config || typeof config !== 'object') {
+      return;
+    };
+
+    if (typeof config.devMode === 'boolean') {
+      self.config.devMode = config.devMode;
+    };
+
+    if (Array.isArray(config.themes) && config.themes.length) {
+      for (let x of config.themes) {
+        self.config.themes[x.id] = x.name;
+      };
+      self.settings.theme = config.themes[0].id;
+    };
   };
 
   // 构建 PWA 配置
