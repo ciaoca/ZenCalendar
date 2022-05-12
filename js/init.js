@@ -38,6 +38,65 @@
     }
   };
 
+  // 节日
+  zenCalendar.festival = {
+    '3-15': '消费者权益日'
+  };
+
+  // 休息日配置 (休)
+  zenCalendar.holiday = {
+    // 按月设置，每年都会重复
+    // '1-1': '',
+    // '5-1': '',
+    // '10-1': '',
+    // '10-2': '',
+    // '10-3': '',
+
+    // 按具体日期设置
+    '2022-1-1': '',
+    '2022-1-2': '',
+    '2022-1-3': '',
+    '2022-1-31': '',
+    '2022-2-1': '',
+    '2022-2-2': '',
+    '2022-2-3': '',
+    '2022-2-4': '',
+    '2022-2-5': '',
+    '2022-2-6': '',
+    '2022-4-3': '',
+    '2022-4-4': '',
+    '2022-4-5': '',
+    '2022-4-30': '',
+    '2022-5-1': '',
+    '2022-5-2': '',
+    '2022-5-3': '',
+    '2022-5-4': '',
+    '2022-6-3': '',
+    '2022-6-4': '',
+    '2022-6-5': '',
+    '2022-9-10': '',
+    '2022-9-11': '',
+    '2022-9-12': '',
+    '2022-10-1': '',
+    '2022-10-2': '',
+    '2022-10-3': '',
+    '2022-10-4': '',
+    '2022-10-5': '',
+    '2022-10-6': '',
+    '2022-10-7': '',
+  };
+
+  // 工作日配置 (班)
+  zenCalendar.workday = {
+    '2022-1-29': '',
+    '2022-1-30': '',
+    '2022-4-2': '',
+    '2022-4-24': '',
+    '2022-5-7': '',
+    '2022-10-8': '',
+    '2022-10-9': '',
+  };
+
   // 判断是否是整数
   zenCalendar.isInteger = function(value) {
     return typeof value === 'number' && !isNaN(value) && /^\d+$/.test(value);
@@ -252,12 +311,7 @@
 
     self.setOptions();
     self.gotoYear();
-
-    if (self.dom.themeStyle.dataset.id && self.settings.curYear === new Date().getFullYear()) {
-      setTimeout(() => {
-        self.gotoToday();
-      }, 200);
-    };
+    self.checkViewNow();
   };
 
   // 获取配置参数
@@ -350,8 +404,8 @@
         return;
       };
 
-      return response.text();
       // console.log('success', response);
+      return response.text();
 
     }).then((data) => {
       const cacheStyle = {
@@ -396,10 +450,11 @@
       self.dom.themeStyle.dataset.id = self.settings.theme;
       self.dom.themeStyle.innerHTML = cacheStyle.text;
       self.setLocalStorage('theme', cacheStyle);
+      self.checkViewNow();
 
     }).catch((error) => {
-      notyf.error(String(error));
       console.error('error', error);
+      notyf.error(String(error));
     });
   };
 
@@ -457,6 +512,21 @@
     //   behavior: 'smooth'
     // });
     // document.documentElement.scrollTop = 0;
+  };
+
+  zenCalendar.checkViewNow = function() {
+    const self = this;
+
+    if (self.hasViewNow) {
+      return;
+    };
+
+    if (self.dom.themeStyle.dataset.id && self.settings.curYear === new Date().getFullYear()) {
+      setTimeout(() => {
+        self.hasViewNow = true;
+        self.gotoToday();
+      }, 200);
+    };
   };
 
   zenCalendar.buildStage = function() {
@@ -781,65 +851,6 @@
     };
 
     return text;
-  };
-
-  // 节日
-  zenCalendar.festival = {
-    '3-15': '消费者权益日'
-  };
-
-  // 休息日配置 (休)
-  zenCalendar.holiday = {
-    // 按月设置，每年都会重复
-    // '1-1': '',
-    // '5-1': '',
-    // '10-1': '',
-    // '10-2': '',
-    // '10-3': '',
-
-    // 按具体日期设置
-    '2022-1-1': '',
-    '2022-1-2': '',
-    '2022-1-3': '',
-    '2022-1-31': '',
-    '2022-2-1': '',
-    '2022-2-2': '',
-    '2022-2-3': '',
-    '2022-2-4': '',
-    '2022-2-5': '',
-    '2022-2-6': '',
-    '2022-4-3': '',
-    '2022-4-4': '',
-    '2022-4-5': '',
-    '2022-4-30': '',
-    '2022-5-1': '',
-    '2022-5-2': '',
-    '2022-5-3': '',
-    '2022-5-4': '',
-    '2022-6-3': '',
-    '2022-6-4': '',
-    '2022-6-5': '',
-    '2022-9-10': '',
-    '2022-9-11': '',
-    '2022-9-12': '',
-    '2022-10-1': '',
-    '2022-10-2': '',
-    '2022-10-3': '',
-    '2022-10-4': '',
-    '2022-10-5': '',
-    '2022-10-6': '',
-    '2022-10-7': '',
-  };
-
-  // 工作日配置 (班)
-  zenCalendar.workday = {
-    '2022-1-29': '',
-    '2022-1-30': '',
-    '2022-4-2': '',
-    '2022-4-24': '',
-    '2022-5-7': '',
-    '2022-10-8': '',
-    '2022-10-9': '',
   };
 
   document.addEventListener('DOMContentLoaded', () => {
