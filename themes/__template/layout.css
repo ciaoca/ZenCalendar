@@ -3,6 +3,7 @@
  * @description 简介
  * @author 作者
  * @email 联系邮箱
+ * @license Released under the MIT license
  */
 
 
@@ -18,8 +19,19 @@
 .calendar .hd .month{}
 
 .calendar .bd{}
-.calendar .bd ol{}
-.calendar .bd li{}
+
+/* 日期排版方式 每周一行 */
+.calendar .bd ol{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+}
+.calendar .bd li{
+flex:0 0 14.25%;
+}
+.calendar .bd li:nth-child(7n){
+flex-basis:14.5%;
+}
 
 /* 星期 */
 .calendar .weeks{}
@@ -34,8 +46,18 @@
 /**
  * 日期
  * .num       数字日期
- * .name      特殊日期名称
+ * .name      日期名称
  * .week      第几周
+ */
+.calendar .days{}
+.calendar .days .item{}
+.calendar .days span{}
+.calendar .days .num{}
+.calendar .days .name{}
+.calendar .days .week{}
+
+/**
+ * 特殊日期
  * .sat       周六
  * .sun       周日
  * .holiday   休息日
@@ -43,14 +65,6 @@
  * .now       今天
  * .other     前后月份填充的日期
  */
-.calendar .days{}
-.calendar .days .item{}
-
-.calendar .days span{}
-.calendar .days .num{}
-.calendar .days .name{}
-.calendar .days .week{}
-
 .calendar .days .sat{}
 .calendar .days .sun{}
 .calendar .days .holiday{}
