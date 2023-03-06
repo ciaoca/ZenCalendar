@@ -142,7 +142,7 @@ body.print .calendar .days .item{padding-top:16px;padding-bottom:16px;}
 body.print .calendar .days .item:before{top:6px;left:6px;}
 body.print .calendar .days .num{line-height:40px;}
 body.print .calendar .days .name{line-height:24px;}
-body.print .calendar .days .now .item{background-color:transparent;}
+body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
 
 body.print .calendar.hide_yearweek section .hd,
 body.print .calendar.hide_yearweek section .bd{padding-left:0;}

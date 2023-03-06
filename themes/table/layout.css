@@ -139,7 +139,7 @@ body.print .calendar .days .item:before{top:8px;left:auto;right:8px;}
 body.print .calendar .days .num{line-height:40px;text-align:left;}
 body.print .calendar .days .name{line-height:24px;text-align:left;}
 body.print .calendar .days .week{bottom:4px;left:8px;}
-body.print .calendar .days .now .item{background-color:transparent;}
+body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
 
 /* A3 纵向 */
 body.print.a3{
