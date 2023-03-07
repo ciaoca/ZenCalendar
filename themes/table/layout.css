@@ -87,16 +87,7 @@ flex-basis:14.5%;
 .calendar .days .workday .item:before{content:'班';}
 .calendar .days .other .item:before{opacity:1;}
 
-.calendar .days .other,
-.calendar .days .other.workday,
-.calendar .days .other.sat.workday,
-.calendar .days .other.sun.workday{color:rgba(67, 74, 84, 0.3);}
-
-.calendar .days .other.sat{color:rgba(74, 137, 220, 0.3);}
-.calendar .days .other.sun,
-.calendar .days .other.holiday,
-.calendar .days .other.sat.holiday,
-.calendar .days .other.sun.holiday{color:rgba(218, 68, 83, 0.3);}
+.calendar .days .other .item{opacity:0.4;}
 
 /* 隐藏前后月份的日期 */
 .calendar.hide_fillday .days .other{background-color:transparent;}
@@ -110,13 +101,17 @@ flex-basis:14.5%;
  * 打印模式（默认 A4 纵向）
  * ------------------------------ */
 body.print{
---month-size:3rem;
+--day-color:#000;
+--saturday-color:#00f;
+--sunday-color:#f00;
+--month-size:4rem;
 --week-size:2.2rem;
 --day-num-size:3.6rem;
 --day-name-size:1.6rem;
 --day-tip-size:1.6rem;
 --year-week-size:1.4rem;
---border-color:#888;
+--border-color:#333;
+--border-size:2px;
 }
 body.print .calendar{display:block;}
 body.print .calendar section{margin:0;}
@@ -124,26 +119,23 @@ body.print .calendar section{margin:0;}
 body.print .calendar .hd{line-height:120px;}
 body.print .calendar .hd span{vertical-align:top;}
 body.print .calendar .hd span:after{font-size:0.9em;vertical-align:top;}
-body.print .calendar .hd .year{position:absolute;top:0;right:50%;margin-right:calc(var(--month-size) + 1rem);}
-body.print .calendar .hd .month{position:static;margin:0;font-size:2em;}
-body.print .calendar .hd .month:after{position:absolute;top:0;left:50%;margin-left:calc(var(--month-size) + 1rem);font-size:calc(var(--month-size) * 0.9);}
-
-body.print .calendar section:nth-child(n+10) .hd .year{margin-right:calc(var(--month-size) + 3rem);}
-body.print .calendar section:nth-child(n+10) .hd .month:after{margin-left:calc(var(--month-size) + 3rem);}
+body.print .calendar .hd .month{margin-left:calc(var(--month-size) / 2);font-size:1.8em;}
+body.print .calendar .hd .month:after{margin-left:calc(var(--month-size) / 2);font-size:calc(var(--month-size) * 0.9);}
 
 body.print .calendar .weeks{line-height:60px;}
 body.print .calendar .weeks li:after{display:inline;}
 
-body.print .calendar .days .item{height:120px;padding:8px;}
-body.print .calendar .days .item:before{top:8px;left:auto;right:8px;}
-body.print .calendar .days .num{line-height:40px;text-align:left;}
-body.print .calendar .days .name{line-height:24px;text-align:left;}
-body.print .calendar .days .week{bottom:4px;left:8px;}
+body.print .calendar .days .item{height:110px;padding:12px;}
+body.print .calendar .days .item:before{top:12px;left:auto;right:12px;}
+body.print .calendar .days .num{font-weight:bold;line-height:40px;text-align:left;}
+body.print .calendar .days .name{line-height:24px;text-align:left;white-space:normal;}
+body.print .calendar .days .week{bottom:8px;left:12px;}
 body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
+body.print .calendar .days .other .item{opacity:0.5;}
 
 /* A3 纵向 */
 body.print.a3{
---month-size:4rem;
+--month-size:5rem;
 --week-size:2.8rem;
 --day-num-size:6rem;
 --day-name-size:2rem;
@@ -152,11 +144,11 @@ body.print.a3{
 }
 body.print.a3 .calendar .hd{line-height:160px;}
 body.print.a3 .calendar .weeks{line-height:80px;}
-body.print.a3 .calendar .days .item{height:180px;padding:12px;}
-body.print.a3 .calendar .days .item:before{top:12px;right:12px;}
+body.print.a3 .calendar .days .item{height:170px;padding:16px;}
+body.print.a3 .calendar .days .item:before{top:16px;right:16px;}
 body.print.a3 .calendar .days .num{line-height:60px;}
 body.print.a3 .calendar .days .name{line-height:28px;}
-body.print.a3 .calendar .days .week{bottom:8px;left:12px;}
+body.print.a3 .calendar .days .week{bottom:12px;left:16px;}
 
 /* A5 横向 */
 body.print.a5h{
@@ -254,7 +246,7 @@ flex:0 0 31%;
 
 
 @media (min-width:1920px) {
-.calendar{margin-left:80px;margin:80px;}
+.calendar{margin:80px;}
 }
 
 
