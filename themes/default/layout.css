@@ -131,6 +131,10 @@ body.print .calendar .days .item:before{top:6px;left:6px;}
 body.print .calendar .days .num{line-height:40px;}
 body.print .calendar .days .name{line-height:24px;}
 body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
+body.print .calendar .days .now.sat .item{color:var(--saturday-color);}
+body.print .calendar .days .now.sun .item{color:var(--sunday-color);}
+
+body.print .calendar .days .now .item
 body.print .calendar .days .other .item{opacity:0.5;}
 
 body.print .calendar.hide_yearweek section .hd,

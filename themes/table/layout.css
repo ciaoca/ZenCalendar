@@ -131,6 +131,10 @@ body.print .calendar .days .num{font-weight:bold;line-height:40px;text-align:lef
 body.print .calendar .days .name{line-height:24px;text-align:left;white-space:normal;}
 body.print .calendar .days .week{bottom:8px;left:12px;}
 body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
+body.print .calendar .days .now.sat .item{color:var(--saturday-color);}
+body.print .calendar .days .now.sun .item{color:var(--sunday-color);}
+
+body.print .calendar .days .now .item,
 body.print .calendar .days .other .item{opacity:0.5;}
 
 /* A3 纵向 */
