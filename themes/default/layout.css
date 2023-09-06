@@ -134,7 +134,6 @@ body.print .calendar .days .now .item{background-color:transparent;color:var(--d
 body.print .calendar .days .now.sat .item{color:var(--saturday-color);}
 body.print .calendar .days .now.sun .item{color:var(--sunday-color);}
 
-body.print .calendar .days .now .item
 body.print .calendar .days .other .item{opacity:0.5;}
 
 body.print .calendar.hide_yearweek section .hd,
