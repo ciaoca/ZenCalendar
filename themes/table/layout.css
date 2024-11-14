@@ -133,6 +133,8 @@ body.print .calendar .days .week{bottom:8px;left:12px;}
 body.print .calendar .days .now .item{background-color:transparent;color:var(--day-color);}
 body.print .calendar .days .now.sat .item{color:var(--saturday-color);}
 body.print .calendar .days .now.sun .item{color:var(--sunday-color);}
+body.print .calendar .days .now.holiday .item{color:var(--sunday-color);}
+body.print .calendar .days .now.workday .item{color:var(--day-color);}
 
 body.print .calendar .days .other .item{opacity:0.5;}
 

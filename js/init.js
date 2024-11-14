@@ -10,21 +10,13 @@
   });
 
   const zenCalendar = {
+    devMode: false,
+    prefix: 'zencalendar_',
+
     dom: {},
     reg: {
       isYear: /^\d{4}$/,
       isTime: /^\d{1,2}(\:\d{1,2}){1,2}$/
-    },
-    config: {
-      prefix: 'zencalendar_',
-      themes: {},
-      modes: {},
-
-      /**
-       * 开发模式
-       * 禁用缓存和 Service Worker（建议开发时禁用）
-       */
-      devMode: false,
     },
     settings: {
       curYear: new Date().getFullYear(),
@@ -40,101 +32,14 @@
     language: {
       startWeekName: ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],
       horizontal: '横向',
-    }
-  };
+    },
 
-  // 节日
-  zenCalendar.festival = {
-    '3-15': '消费者权益日'
-  };
+    themeMaps: {},          // 主题样式列表
+    printMaps: {},          // 打印模式列表
 
-  // 休息日配置 (休)
-  zenCalendar.holiday = {
-    // 按月设置，每年都会重复
-    // '1-1': '',
-    // '5-1': '',
-    // '10-1': '',
-    // '10-2': '',
-    // '10-3': '',
-
-    // 按具体日期设置
-    '2023-1-1': '',
-    '2023-1-2': '',
-    '2023-1-21': '',
-    '2023-1-22': '',
-    '2023-1-23': '',
-    '2023-1-24': '',
-    '2023-1-25': '',
-    '2023-1-26': '',
-    '2023-1-27': '',
-    '2023-4-5': '',
-    '2023-4-29': '',
-    '2023-4-30': '',
-    '2023-5-1': '',
-    '2023-5-2': '',
-    '2023-5-3': '',
-    '2023-6-22': '',
-    '2023-6-23': '',
-    '2023-6-24': '',
-    '2023-9-29': '',
-    '2023-9-30': '',
-    '2023-10-1': '',
-    '2023-10-2': '',
-    '2023-10-3': '',
-    '2023-10-4': '',
-    '2023-10-5': '',
-    '2023-10-6': '',
-    '2023-12-30': '',
-    '2023-12-31': '',
-    '2024-1-1': '',
-    '2024-2-10': '',
-    '2024-2-11': '',
-    '2024-2-12': '',
-    '2024-2-13': '',
-    '2024-2-14': '',
-    '2024-2-15': '',
-    '2024-2-16': '',
-    '2024-2-17': '',
-    '2024-4-4': '',
-    '2024-4-5': '',
-    '2024-4-6': '',
-    '2024-5-1': '',
-    '2024-5-2': '',
-    '2024-5-3': '',
-    '2024-5-4': '',
-    '2024-5-5': '',
-    '2024-6-8': '',
-    '2024-6-9': '',
-    '2024-6-10': '',
-    '2024-9-15': '',
-    '2024-9-16': '',
-    '2024-9-17': '',
-    '2024-10-1': '',
-    '2024-10-2': '',
-    '2024-10-3': '',
-    '2024-10-4': '',
-    '2024-10-5': '',
-    '2024-10-6': '',
-    '2024-10-7': '',
-  };
-
-  // 工作日配置 (班)
-  zenCalendar.workday = {
-    '2023-1-28': '',
-    '2023-1-29': '',
-    '2023-4-23': '',
-    '2023-5-6': '',
-    '2023-6-25': '',
-    '2023-10-7': '',
-    '2023-10-8': '',
-    '2024-2-4': '',
-    '2024-2-18': '',
-    '2024-4-7': '',
-    '2024-4-28': '',
-    '2024-5-11': '',
-    '2024-9-14': '',
-    '2024-9-29': '',
-    '2024-10-12': '',
+    festival: {},
+    holiday: {},
+    workday: {},
   };
 
   // 判断是否是整数
@@ -184,7 +89,7 @@
       return;
     };
     
-    localStorage.setItem(this.config.prefix + name, JSON.stringify(data));
+    localStorage.setItem(this.prefix + name, JSON.stringify(data));
   };
 
   // 读取本地存储（localStorage）
@@ -193,7 +98,7 @@
       return null;
     };
 
-    let data = localStorage.getItem(this.config.prefix + name);
+    const data = localStorage.getItem(this.prefix + name);
 
     try {
       return JSON.parse(data);
@@ -219,11 +124,22 @@
     self.mergeConfig();
     self.getOptions();
 
-    if (!self.config.devMode) {
+    if (self.devMode === true) {
+      if ('serviceWorker' in navigator) {
+         navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (let x of registrations) {
+            x.unregister().catch((error) => {
+              console.error(`Registration failed with ${error}`);
+            });
+          };
+        });
+      };
+
+    } else {
       self.buildPwa();
-      self.getCacheTheme();
     };
 
+    self.getCacheTheme();
     self.buildStage();
     self.ready();
   };
@@ -231,21 +147,27 @@
   // 合并页面配置项
   zenCalendar.mergeConfig = function() {
     const self = this;
-    const config = window.pageData;
+    const config = window.zenCalendarConfig;
 
     if (!config || typeof config !== 'object') {
       return;
     };
 
     if (typeof config.devMode === 'boolean') {
-      self.config.devMode = config.devMode;
+      self.devMode = config.devMode;
     };
 
     if (Array.isArray(config.themes) && config.themes.length) {
       for (let x of config.themes) {
-        self.config.themes[x.id] = x.name;
+        self.themeMaps[x.id] = x.name;
       };
       self.settings.theme = config.themes[0].id;
+    };
+
+    for (let x of ['festival', 'holiday', 'workday']) {
+      if (typeof config[x] === 'object') {
+        self[x] = {...config[x]};
+      };
     };
   };
 
@@ -270,9 +192,9 @@
       navigator.serviceWorker.register('./serviceworker.js', {
         scope: './'
       });
-      // .then(function(registration) {
+      // .then((registration) => {
       //   console.log(registration);
-      // }).catch(function(error) {
+      // }).catch((error) => {
       //   console.log(error);
       // });
     };
@@ -281,12 +203,12 @@
   zenCalendar.ready = function() {
     const self = this;
 
-    self.dom.body.addEventListener('change', function(e) {
+    self.dom.body.addEventListener('change', (e) => {
       const el = e.target;
       const nodeName = el.nodeName.toLowerCase();
 
       if (nodeName === 'input') {
-        let name = el.name;
+        const name = el.name;
 
         switch (name) {
           case 'hideFillDay':
@@ -322,7 +244,7 @@
       };
     });
 
-    self.dom.body.addEventListener('click', function(e) {
+    self.dom.body.addEventListener('click', (e) => {
       const el = e.target;
       const nodeName = el.nodeName.toLowerCase();
 
@@ -394,10 +316,10 @@
     };
 
     if (self.settings.printSize.length) {
-      let size = self.settings.printSize.toLowerCase();
+      const size = self.settings.printSize.toLowerCase();
 
       if (!self.dom.body.classList.contains(size)) {
-        self.dom.body.classList.remove(...['print', ...Object.keys(self.config.modes)]);
+        self.dom.body.classList.remove(...['print', ...Object.keys(self.printMaps)]);
         self.dom.body.classList.add('print', size);
       };
 
@@ -427,13 +349,8 @@
   zenCalendar.getCacheTheme = function() {
     const self = this;
     const cacheStyle = self.getLocalStorage('theme');
-    const nowTime = new Date().getTime();
 
     if (!cacheStyle || typeof cacheStyle !== 'object' || typeof cacheStyle.timestamp !== 'number') {
-      return;
-    };
-
-    if (nowTime - cacheStyle.timestamp > 86400000) {
       return;
     };
 
@@ -474,10 +391,10 @@
       const noteRule = {};
 
       if (Array.isArray(noteReg) && noteReg.length) {
-        let list = noteReg[0].match(/^\s+\*\s+\@.+$/gm);
+        const list = noteReg[0].match(/^\s+\*\s+\@.+$/gm);
 
         for (let x of list) {
-          let row = x.match(/^\s+\*\s+\@([^\s]+)\s+(.+)$/);
+          const row = x.match(/^\s+\*\s+\@([^\s]+)\s+(.+)$/);
 
           if (Array.isArray(row) && row.length >= 2) {
             if (['printMode'].indexOf(row[1]) >= 0) {
@@ -571,12 +488,13 @@
 
   zenCalendar.checkViewNow = function() {
     const self = this;
+    const year = new Date().getFullYear();
 
     if (self.hasViewNow) {
       return;
     };
 
-    if (self.dom.themeStyle.dataset.id && self.settings.curYear === new Date().getFullYear()) {
+    if (self.dom.themeStyle.dataset.id && self.settings.curYear === year) {
       setTimeout(() => {
         self.hasViewNow = true;
         self.gotoToday();
@@ -632,8 +550,8 @@
         <label for="tool_lockRow">固定行数</label>
       </section>
       <section class="is_namevalue">
-        <label>星期开始于</label>
-        <select name="wday">`;
+        <label for="tools_wday">星期开始于</label>
+        <select name="wday" id="tools_wday">`;
 
     for (let i = 0; i < 7; i++) {
       html += `<option value="${i}"${self.settings.wday === i ? ' selected' : ''}>${self.language.startWeekName[parseInt(i, 10)]}</option>`;
@@ -642,23 +560,27 @@
     html += `</select>
       </section>
       <section class="is_namevalue in_mode">
-        <label>打印模式</label>
-        <select name="printSize"></select>
+        <label for="tool_printSize">打印模式</label>
+        <select name="printSize" id="tool_printSize"></select>
       </section>
       <section class="is_namevalue in_theme">
-        <label>主题</label>
-        <select name="theme">`;
+        <label for="tool_theme">主题</label>
+        <select name="theme" id="tool_theme">`;
 
-    for (let x in self.config.themes) {
-      html += `<option value="${x}"${self.settings.theme === x ? ' selected' : ''}>${self.config.themes[x]}</option>`;
+    for (let x in self.themeMaps) {
+      html += `<option value="${x}"${self.settings.theme === x ? ' selected' : ''}>${self.themeMaps[x]}</option>`;
     };
 
     html += `</select>
-      </section>
-      <div class="gitbtn">
+      </section>`;
+
+    if (navigator.onLine) {
+      html += `<div class="gitbtn">
         <iframe src="https://ghbtns.com/github-btn.html?user=ciaoca&repo=ZenCalendar&type=star&count=true" frameborder="0" scrolling="0" height="20" title="GitHub"></iframe>
-      </div>
-    </div>
+      </div>`;
+    };
+
+    html += `</div>
     <a class="toggle" href="javascript://" rel="toggle_tool"></a>`;
 
     self.dom.tool.innerHTML = html;
@@ -667,11 +589,11 @@
   // 处理打印模式
   zenCalendar.parsePrintModes = function(list) {
     const self = this;
-    self.config.modes = {};
+    self.printMaps = {};
 
     if (Array.isArray(list) && list.length) {
       for (let x of list) {
-        self.config.modes[x.toLowerCase()] = x.slice(-1).toLowerCase() === 'h' ? x.slice(0, -1) + ' ' + self.language.horizontal : x;
+        self.printMaps[x.toLowerCase()] = x.slice(-1).toLowerCase() === 'h' ? x.slice(0, -1) + ' ' + self.language.horizontal : x;
       };
     };
   };
@@ -694,8 +616,8 @@
 
     let html = `<option value="">浏览</option>`;
 
-    for (let x in self.config.modes) {
-      html += `<option value="${x}"${self.settings.printSize.toLowerCase() === x ? ' selected' : ''}>${self.config.modes[x]}</option>`;
+    for (let x in self.printMaps) {
+      html += `<option value="${x}"${self.settings.printSize.toLowerCase() === x ? ' selected' : ''}>${self.printMaps[x]}</option>`;
     };
 
     el.innerHTML = html;
@@ -745,7 +667,7 @@
     };
 
     for (let i = 0; i < monthDayMax; i++) {
-      let item = {
+      const item = {
         classVal: [],
         num: '',
         name: '',
@@ -836,6 +758,45 @@
     });
   };
 
+  // 获取日期名称
+  zenCalendar.getCnName = function(year, month, day) {
+    const self = this;
+    const cnDate = calendar.solar2lunar(year, month, day);
+    const dayKeys = [
+      [year, month, day].join('-'),
+      [month, day].join('-'),
+      ['L', cnDate.lDay].join('-'),
+      ['L', cnDate.lMonth, cnDate.lDay].join('-'),
+    ];
+    let text = '';
+
+    for (let x of dayKeys) {
+      if (self.festival.hasOwnProperty(x) && typeof self.festival[x] === 'string' && self.festival[x].length) {
+        text = self.festival[x];
+        break;
+      };
+    };
+
+    if (!text.length) {
+      // 农历节日、阳历节日、农历节气
+      for (let x of ['lunarFestival', 'festival', 'Term']) {
+        if (cnDate.hasOwnProperty(x) && typeof cnDate[x] === 'string' && cnDate[x].length) {
+          text = cnDate[x];
+          break;
+        };
+      };
+    };
+
+    if (!text.length) {
+      // 初一显示月份名
+      if (typeof cnDate.IMonthCn === 'string' && typeof cnDate.IDayCn === 'string') {
+        text = cnDate.IDayCn === '初一' ? cnDate.IMonthCn : cnDate.IDayCn;
+      };
+    };
+
+    return text;
+  };
+
   zenCalendar.getDaysHtml = function(opts) {
     let html = `<section>
       <div class="hd">
@@ -871,41 +832,6 @@
     </section>`;
 
     return html;
-  };
-
-  // 获取日期名称
-  zenCalendar.getCnName = function(year, month, day) {
-    const self = this;
-    const cnDate = calendar.solar2lunar(year, month, day);
-    const mDay = [month, day].join('-');
-    let text;
-
-    // 自定义节日
-    if (!cnDate.festival && self.festival.hasOwnProperty(mDay)) {
-      cnDate.festival = self.festival[mDay];
-    };
-
-    // 农历节日
-    if (cnDate.lunarFestival) {
-      text = cnDate.lunarFestival;
-
-    // 阳历节日
-    } else if (cnDate.festival) {
-      text = cnDate.festival;
-
-    // 阳历节气
-    } else if (cnDate.Term) {
-      text = cnDate.Term;
-
-    // 初一显示月份名
-    } else if (cnDate.IDayCn === '初一') {
-      text = cnDate.IMonthCn;
-
-    } else {
-      text = cnDate.IDayCn;
-    };
-
-    return text;
   };
 
   document.addEventListener('DOMContentLoaded', () => {

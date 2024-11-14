@@ -1,16 +1,28 @@
-let cacheVersion = '20221209';
-let cacheList = [
+const cacheVersion = '20251113';
+const cacheList = [
   './',
   './index.html',
+  './manifest.json',
+  './manifest-ios.json',
+  './manifest-mac.json',
   './icon/favicon.ico',
   './icon/icon-144.png',
   './icon/icon-256.png',
   './icon/icon-512.png',
   './icon/mac/icon-512.png',
-  './css/base.css?version=' + cacheVersion,
-  './js/init.js?version=' + cacheVersion,
-  './js/plugins.js?version=' + cacheVersion
+  './css/base.css',
+  './js/config.js',
+  './js/plugins.js',
+  './js/init.js'
 ];
+
+// for (let i = 0; i < cacheList.length; i++) {
+//   const tail = cacheList[i].slice(cacheList[i].lastIndexOf('.'));
+
+//   if (['.css', '.js'].indexOf(tail) >= 0) {
+//     cacheList[i] += '?version=' + cacheVersion;
+//   };
+// };
 
 self.addEventListener('install', function(e) {
   e.waitUntil(
@@ -25,7 +37,7 @@ self.addEventListener('fetch', function(e) {
   // console.log('fetch', e);
   e.respondWith(
     caches.match(e.request).then(function(cache) {
-      // 如果有cache则直接返回，否则通过fetch请求
+      // 如果有 cache 则直接返回，否则通过 fetch 请求
       return cache || fetch(e.request);
     }).catch(function(err) {
       console.log(err);
