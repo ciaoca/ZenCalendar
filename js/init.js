@@ -798,7 +798,7 @@
   };
 
   zenCalendar.getDaysHtml = function(opts) {
-    let html = `<section>
+    let html = `<section class="month_${opts.month}">
       <div class="hd">
         <span class="year">${opts.year}</span>
         <span class="month">${opts.month}</span>
@@ -806,23 +806,23 @@
       <div class="bd">
         <ol class="weeks">`;
 
-    for (let x in opts.weekList) {
-      html += `<li class="week_${opts.weekList[x].num}${(Array.isArray(opts.weekList[x].classVal) && opts.weekList[x].classVal.length) ? ' ' + opts.weekList[x].classVal.join(' ') : ''}"></li>`;
+    for (let x of opts.weekList) {
+      html += `<li class="week_${x.num}${(Array.isArray(x.classVal) && x.classVal.length) ? ' ' + x.classVal.join(' ') : ''}"></li>`;
     };
 
     html += `</ol>
         <ol class="days">`;
 
-    for (let x in opts.dayList) {
-      html += `<li${(Array.isArray(opts.dayList[x].classVal) && opts.dayList[x].classVal.length) ? ' class="' + opts.dayList[x].classVal.join(' ') + '"' : ''}>
+    for (let x of opts.dayList) {
+      html += `<li${(Array.isArray(x.classVal) && x.classVal.length) ? ' class="' + x.classVal.join(' ') + '"' : ''}>
         <div class="item">`;
 
-      if (opts.dayList[x].week) {
-        html += `<span class="week">${opts.dayList[x].week}</span>`;
+      if (x.week) {
+        html += `<div class="week">${x.week}</div>`;
       };
 
-      html += `<span class="num">${opts.dayList[x].num}</span>
-          <span class="name">${opts.dayList[x].name}</span>
+      html += `<div class="num">${x.num}</div>
+          <div class="name">${x.name}</div>
         </div>
       </li>`;
     };

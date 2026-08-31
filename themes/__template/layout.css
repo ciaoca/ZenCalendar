@@ -12,9 +12,20 @@
  * ------------------------------ */
 .calendar{}
 .calendar section{}
+.calendar .month_1{}
+.calendar .month_2{}
+.calendar .month_3{}
+.calendar .month_4{}
+.calendar .month_5{}
+.calendar .month_6{}
+.calendar .month_7{}
+.calendar .month_8{}
+.calendar .month_9{}
+.calendar .month_10{}
+.calendar .month_11{}
+.calendar .month_12{}
 
 .calendar .hd{}
-.calendar .hd span{}
 .calendar .hd .year{}
 .calendar .hd .month{}
 
@@ -51,7 +62,6 @@ flex-basis:14.5%;
  */
 .calendar .days{}
 .calendar .days .item{}
-.calendar .days span{}
 .calendar .days .num{}
 .calendar .days .name{}
 .calendar .days .week{}

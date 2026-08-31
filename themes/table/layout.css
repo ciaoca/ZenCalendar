@@ -72,7 +72,6 @@ flex-basis:14.5%;
 .calendar .days .item{position:relative;padding:6px 0;}
 .calendar .days .item:before{position:absolute;top:2px;left:2px;font-size:var(--day-tip-size);line-height:1;opacity:0.5;}
 
-.calendar .days span{display:block;}
 .calendar .days .num{font-size:var(--day-num-size);}
 .calendar .days .name{overflow:hidden;font-size:var(--day-name-size);line-height:16px;text-overflow:ellipsis;white-space:nowrap;}
 .calendar .days .week{position:absolute;bottom:0;left:2px;color:rgba(0,0,0,0.3);font-size:var(--year-week-size);line-height:1;}
